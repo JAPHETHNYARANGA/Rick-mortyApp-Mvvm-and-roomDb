@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.storesoko.rickmortyapp.Network.Adapter.MainAdapter
 import com.storesoko.rickmortyapp.Network.Retrofit.ApiClient
 import com.storesoko.rickmortyapp.Network.models.CharacterResponse
 import retrofit2.Call
@@ -22,7 +25,16 @@ class MainActivity : AppCompatActivity() {
                 response: Response<CharacterResponse>
             ) {
                 if(response.isSuccessful){
-                    Log.i("response1", "Successful response"+response.body())
+                    Log.i("response", "Successful response"+response.body())
+
+                    val result = response.body()?.results
+                    result?.let {
+                        val adapter = MainAdapter(result)
+                        val recyclerView = findViewById<RecyclerView>(R.id.charactersRv)
+
+                        recyclerView?.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+                        recyclerView?.adapter = adapter
+                    }
                 }
             }
 
