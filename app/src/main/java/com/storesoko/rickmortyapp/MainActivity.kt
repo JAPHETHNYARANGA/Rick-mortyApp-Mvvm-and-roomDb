@@ -2,45 +2,30 @@ package com.storesoko.rickmortyapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.storesoko.rickmortyapp.Network.Adapter.MainAdapter
-import com.storesoko.rickmortyapp.Network.Retrofit.ApiClient
-import com.storesoko.rickmortyapp.Network.models.CharacterResponse
-import retrofit2.Call
-import retrofit2.Response
+import com.storesoko.rickmortyapp.Network.ViewModel.mainViewModel
+
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: mainViewModel by lazy{
+        ViewModelProvider(this).get(mainViewModel::class.java)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val client = ApiClient.apiService.fetchCharacters("1")
-        client.enqueue(object : retrofit2.Callback<CharacterResponse>{
-            override fun onResponse(
-                call: Call<CharacterResponse>,
-                response: Response<CharacterResponse>
-            ) {
-                if(response.isSuccessful){
-                    Log.i("response", "Successful response"+response.body())
+       viewModel.characterLiveData.observe(this,{characters->
+           val adapter = MainAdapter(characters)
+           val recyclerView = findViewById<RecyclerView>(R.id.charactersRv)
 
-                    val result = response.body()?.results
-                    result?.let {
-                        val adapter = MainAdapter(result)
-                        val recyclerView = findViewById<RecyclerView>(R.id.charactersRv)
-
-                        recyclerView?.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
-                        recyclerView?.adapter = adapter
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<CharacterResponse>, t: Throwable) {
-                Log.e("failed",""+t.message)
-            }
-        })
+           recyclerView?.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+           recyclerView?.adapter = adapter
+       })
     }
 }
