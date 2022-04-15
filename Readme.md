@@ -15,4 +15,8 @@
 <p>Open your project on android studio and let it Run</p>
 
 ## Technologies
-** Kotlin
+* Kotlin
+* Glide
+* Retrofit
+
+## Screenshots
